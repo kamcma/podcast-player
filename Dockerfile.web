@@ -1,0 +1,18 @@
+ARG DOTNET_VERSION=2.1
+
+FROM microsoft/dotnet:${DOTNET_VERSION}-sdk
+WORKDIR /app
+
+COPY src/iTunesClient/iTunesClient.csproj src/iTunesClient/
+COPY src/PodcastClient/PodcastClient.csproj src/PodcastClient/
+COPY src/Web/Web.fsproj src/Web/
+RUN dotnet restore src/Web/Web.fsproj
+
+COPY . .
+RUN dotnet publish src/Web/Web.fsproj -c Release -o dist --no-restore
+
+FROM microsoft/dotnet:${DOTNET_VERSION}-aspnetcore-runtime
+WORKDIR /app
+
+COPY --from=0  /app/src/Web/dist/ .
+# ENTRYPOINT ["dotnet", "Web.dll"]
