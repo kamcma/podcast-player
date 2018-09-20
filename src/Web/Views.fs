@@ -37,13 +37,13 @@ let searchResults (results : Result list) =
 let episode (item : ISyndicationItem) =
     [
         h4 [] [ rawText item.Title];
-        rawText item.Description;
-        rawText (Seq.fold (fun acc (link : ISyndicationLink) -> acc + link.Title + Environment.NewLine) "" item.Links)
+        rawText (item.Published.ToString("d"));
+        rawText item.Description
     ]
 
-let episodes (items : ISyndicationItem list) =
+let episodes (items : seq<ISyndicationItem>) =
     let listItems =
-        List.map (fun (item : ISyndicationItem) -> li [] (episode item)) items
-    let list = ol [] listItems
+        Seq.map (fun (item : ISyndicationItem) -> li [] (episode item)) items
+    let list = ol [] (List.ofSeq listItems)
     [ list ]
     |> layout

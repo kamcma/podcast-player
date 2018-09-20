@@ -65,7 +65,6 @@ let podcastHandler : HttpHandler =
                             feedItemsSeq
                             |> Seq.skip offset
                             |> Seq.truncate 10
-                            |> List.ofSeq
                         return! htmlView (episodes feedItems) next ctx
                     }
         }
