@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SyndicationFeed.ReaderWriter" Version="1.0.*" />
-    <PackageReference Include="System.Interactive.Async" Version="3.2.*" />
   </ItemGroup>
 
 </Project>
