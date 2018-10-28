@@ -34,8 +34,9 @@ let loggingConfiguration (logging : ILoggingBuilder) =
 let webApp =
     choose [
         route "/" >=> indexHandler
-        route "/search" >=> podcastSearchHandler
-        route "/podcast" >=> podcastHandler ]
+        route "/search" >=> bindQuery<PodcastSearch> None podcastSearchHandler
+        route "/podcast" >=> bindQuery<Podcast> None podcastHandler
+        RequestErrors.NOT_FOUND indexHandler ]
 
 let configuration (app : IApplicationBuilder) =
     app.UseGiraffe webApp

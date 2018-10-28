@@ -18,9 +18,8 @@ type PodcastSearch = {
     offset : int option
 }
 
-let podcastSearchHandler : HttpHandler =
+let podcastSearchHandler (podcastSearch : PodcastSearch) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        let podcastSearch = ctx.BindQueryString<PodcastSearch>()
         let offset =
             match podcastSearch.offset with
             | Some i -> i
@@ -40,15 +39,9 @@ type Podcast = {
     offset : int option
 }
 
-
-
-let podcastHandler : HttpHandler =
+let podcastHandler (podcast : Podcast) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        let podcast = ctx.BindQueryString<Podcast>()
-        let offset =
-            match podcast.offset with
-            | Some i -> i
-            | None -> 0
+        let offset = 0
         let iTunesClient = ctx.GetService<iTunesClient>()
         let podcastClient = ctx.GetService<PodcastClient>()
         task {

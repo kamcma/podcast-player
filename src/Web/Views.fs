@@ -21,7 +21,7 @@ let layout content =
 
 let searchResult (result : Result) =
     [
-        a [ _href (sprintf "/podcast?itunesid=%i" result.CollectionId) ] [
+        a [ _href (sprintf "/podcast?iTunesId=%d" result.CollectionId) ] [
             img [ _src result.ArtworkUrl100 ];
         ]
         p [] [ rawText result.CollectionName ]
