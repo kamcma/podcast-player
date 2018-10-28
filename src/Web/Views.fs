@@ -5,18 +5,19 @@ open Giraffe.GiraffeViewEngine
 open iTunesClient.Models
 open Microsoft.SyndicationFeed
 
+let searchForm =
+    form [ _method "GET"; _action "/search" ] [
+        input [ _type "text"; _name "query" ]
+        input [ _type "submit"]
+    ]
+
 let layout content =
     html [] [
         head [] [
             meta [ _charset "utf-8" ]
             title [] [ rawText "Podcast Player" ]
         ]
-        body [] ([
-            form [ _method "GET"; _action "/search" ] [
-                input [ _type "text"; _name "query" ]
-                input [ _type "submit"]
-            ]
-        ] @ content)
+        body [] ([ searchForm ] @ content)
     ]
 
 let searchResult (result : Result) =
