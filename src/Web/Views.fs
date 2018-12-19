@@ -1,6 +1,5 @@
 module WebApp.Views
 
-open System
 open Giraffe.GiraffeViewEngine
 open iTunesClient.Models
 open Microsoft.SyndicationFeed
@@ -35,16 +34,31 @@ let searchResults (results : Result list) =
     [ list ]
     |> layout
 
-let episode (item : ISyndicationItem) =
+let episode (iTunesId : int64) (indexedItem : int * ISyndicationItem) =
+    let idx, item = indexedItem
     [
-        h4 [] [ rawText item.Title];
+        a [ _href (sprintf "/episode?iTunesId=%i&offset=%i" iTunesId idx) ] [
+            h4 [] [ rawText item.Title];
+        ]
         rawText (item.Published.ToString("d"));
-        rawText item.Description
     ]
 
-let episodes (items : seq<ISyndicationItem>) =
+let episodes (iTunesId : int64) (items : seq<ISyndicationItem>) =
     let listItems =
-        Seq.map (fun (item : ISyndicationItem) -> li [] (episode item)) items
+        Seq.indexed items
+        |> Seq.map (fun (indexedItem : int * ISyndicationItem) -> li [] (episode iTunesId indexedItem))
     let list = ol [] (List.ofSeq listItems)
     [ list ]
+    |> layout
+
+let episodePlayer (item : ISyndicationItem) =
+    let link =
+        item.Links
+        |> Seq.find (fun (link : ISyndicationLink) -> link.RelationshipType = "enclosure")
+
+    [
+        audio [ _controls ] [
+            source [ _src link.Uri.AbsoluteUri; _type link.MediaType ]
+        ]
+    ]
     |> layout

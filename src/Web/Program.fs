@@ -36,6 +36,7 @@ let webApp =
         route "/" >=> indexHandler
         route "/search" >=> bindQuery<PodcastSearch> None podcastSearchHandler
         route "/podcast" >=> bindQuery<Podcast> None podcastHandler
+        route "/episode" >=> bindQuery<PodcastEpisode> None podcastEpisodeHandler
         RequestErrors.NOT_FOUND indexHandler ]
 
 let configuration (app : IApplicationBuilder) =

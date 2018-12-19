@@ -58,6 +58,35 @@ let podcastHandler (podcast : Podcast) : HttpHandler =
                             feedItemsSeq
                             |> Seq.skip offset
                             |> Seq.truncate 10
-                        return! htmlView (episodes feedItems) next ctx
+                        return! htmlView (episodes podcast.iTunesId feedItems) next ctx
+                    }
+        }
+
+[<CLIMutable>]
+type PodcastEpisode = {
+    iTunesId : int64
+    offset : int
+}
+
+let podcastEpisodeHandler (podcastEpisode : PodcastEpisode) : HttpHandler =
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        let iTunesClient = ctx.GetService<iTunesClient>()
+        let podcastClient = ctx.GetService<PodcastClient>()
+        task {
+            let! iTunesRes = iTunesClient.Lookup podcastEpisode.iTunesId
+            return! iTunesRes.Results
+            |> Array.tryHead
+            |> Option.map (fun result -> result.FeedUrl)
+            |> function
+                | None -> ServerErrors.internalError (text "feed url not found") next ctx
+                | Some feedUrl ->
+                    task {
+                        let! feedItemsSeq = podcastClient.Fetch feedUrl
+                        return! feedItemsSeq
+                            |> Seq.skip podcastEpisode.offset
+                            |> Seq.tryHead
+                            |> function
+                                | None -> ServerErrors.internalError (text "episode not found") next ctx
+                                | Some feedItem -> htmlView (episodePlayer feedItem) next ctx
                     }
         }
